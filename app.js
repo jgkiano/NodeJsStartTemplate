@@ -9,6 +9,10 @@ var express         = require ("express")
     SocialAuth      = require("./authentication/strategies.js"),
     methodOverride  = require("method-override")
 
+//requiring routes
+var indexRoutes = require("./routes/index"),
+    authRoutes = require("./routes/authroutes")
+
 //set port
 app.set('port', (process.env.PORT || 3000));
 
@@ -62,66 +66,11 @@ app.use(function(req, res, next) {
 
 //-----Mongoose-----//
 // connect to the database
-var url = process.env.DATABASEURL || "mongodb://localhost/demoapp";
+var url = process.env.DATABASEURL || "mongodb://localhost/yourdb";
 mongoose.connect(url);
 
-//-----ROUTES------//
-
-app.get("/", function(req, res) {
-    if(req.isAuthenticated()) {
-        res.render("home");
-    } else {
-        res.render("landing");
-    }
-});
-
-app.get("/login", function(req, res) {
-    res.render("login");
-});
-
-app.get("/home", ensureAuthenticated, function(req, res) {
-    res.render("home")
-});
-
-//-----AUTHENTICATION ROUTES---//
-
-//facebook
-app.get('/auth/facebook', passport.authenticate("facebook"), function(req, res){});
-
-app.get('/auth/facebook/callback', passport.authenticate("facebook", { failureRedirect: "/" }), function(req, res) {
-    res.redirect('/home');
-});
-
-//github
-app.get('/auth/github', passport.authenticate("github"), function(req, res){});
-
-app.get('/auth/github/callback', passport.authenticate("github", { failureRedirect: "/" }), function(req, res) {
-    res.redirect('/home');
-});
-
-//google
-app.get("/auth/google", passport.authenticate("google", { scope: [
-    'https://www.googleapis.com/auth/plus.login',
-    'https://www.googleapis.com/auth/plus.profile.emails.read'
-]}), function(req, res){});
-
-app.get('/auth/google/callback', passport.authenticate("google", { failureRedirect: "/" }), function(req, res) {
-    res.redirect('/home');
-});
-
-//logout
-app.get("/logout", function(req, res) {
-    req.logout();
-    res.redirect('/');
-});
-
-//MiddleWare - test authentication
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/login');
-}
+app.use("/", indexRoutes);
+app.use("/auth", authRoutes);
 
 app.listen(app.get('port'), function() {
   console.log("App is running at localhost:" + app.get('port'))

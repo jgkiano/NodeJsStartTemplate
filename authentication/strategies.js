@@ -2,7 +2,7 @@ var passport        = require("passport"),
     config          = require("./oauth.js"),
     FacebookStrategy= require("passport-facebook").Strategy,
     GithubStrategy  = require('passport-github2').Strategy,
-    GoogleStrategy  = require('passport-google-oauth2').Strategy
+    GoogleStrategy  = require('passport-google-oauth2').Strategy,
     User            = require('../models/user.js');
 
 module.exports =
